@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
-import toast from 'react-hot-toast';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -36,10 +35,10 @@ export default function Login() {
     }
   };
 
-  // Forgot password click handler (Aap yahan apna custom logic ya alert de sakte hain)
+  // Forgot password handler (Updated to navigate to reset page)
   const handleForgotPassword = (e) => {
     e.preventDefault();
-    toast.error('Password reset feature backend par configure karna hoga!');
+    navigate('/forgot-password');
   };
 
   return (
