@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // <-- 1. Added for navigation/logout
-import API from '../services/api'; // <-- 2. Using centralized API instead of localhost axios
+import { useNavigate } from 'react-router-dom';
+import API from '../services/api';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import toast from 'react-hot-toast';
 
@@ -51,7 +51,6 @@ export default function Dashboard() {
 
   const fetchTransactions = async () => {
     try {
-      // Using API instance (/api/transactions)
       const res = await API.get('/transactions', {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -73,7 +72,6 @@ export default function Dashboard() {
     const toastId = toast.loading('Adding transaction...');
 
     try {
-      // Using API instance (/api/transactions)
       await API.post('/transactions', {
         text,
         amount: Number(amount),
@@ -100,7 +98,6 @@ export default function Dashboard() {
   const deleteTransaction = async (id) => {
     const toastId = toast.loading('Deleting transaction...');
     try {
-      // Using API instance (/api/transactions/:id)
       await API.delete(`/transactions/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -164,25 +161,15 @@ export default function Dashboard() {
     <div className="p-6">
       <div className="max-w-4xl mx-auto space-y-6">
         
-        {/* Welcome Banner with Logout Button */}
+        {/* Welcome Banner (Logout button removed from here) */}
         <div className="bg-gradient-to-r from-purple-600/80 to-sky-500/80 backdrop-blur-md p-6 rounded-2xl shadow-xl text-white flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Welcome back, {userName || 'User'}! 👋</h1>
             <p className="text-purple-100 mt-1 text-sm">Here is your financial overview for today.</p>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="hidden md:block bg-white/20 backdrop-blur-md px-4 py-2 rounded-xl border border-white/30 text-right">
-              <p className="text-xs text-purple-100">Net Balance</p>
-              <p className="text-xl font-bold">{formatCurrency(balance)}</p>
-            </div>
-            {token && (
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-semibold shadow-md transition-all text-sm"
-              >
-                Logout
-              </button>
-            )}
+          <div className="hidden md:block bg-white/20 backdrop-blur-md px-4 py-2 rounded-xl border border-white/30 text-right">
+            <p className="text-xs text-purple-100">Net Balance</p>
+            <p className="text-xl font-bold">{formatCurrency(balance)}</p>
           </div>
         </div>
 
