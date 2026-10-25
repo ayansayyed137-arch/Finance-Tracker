@@ -17,9 +17,17 @@ export default function Login() {
       });
       setMessage('Login successful!');
       
+      // 1. Purana sara localStorage clear karo taaki purana user data na bache
+      localStorage.clear();
+
+      // 2. Naya token save karo
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
       }
+
+      // 3. Naya user naam save karo (backend se aane wale name ya email ke base par)
+      const loggedInName = res.data.name || res.data.user?.name || email.split('@')[0];
+      localStorage.setItem('userName', loggedInName);
 
       setTimeout(() => {
         navigate('/');
