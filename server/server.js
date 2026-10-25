@@ -3,18 +3,21 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 // Secret key for JWT
-const JWT_SECRET = 'super_secret_finance_tracker_key_2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_finance_tracker_key_2026';
 
-// MongoDB Connection (Asli connection string ke sath)
-mongoose.connect('mongodb+srv://ayansayyed137_db_user:cUc5267oiNqYeebN@cluster0.mo5vtpo.mongodb.net/financeTracker?retryWrites=true&w=majority')
-.then(() => console.log('MongoDB Connected Successfully!'))
-.catch(err => console.log('MongoDB Connection Error:', err));
+// MongoDB Connection
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://ayansayyed137_db_user:cUc5267oiNqYeebN@cluster0.mo5vtpo.mongodb.net/financeTracker?retryWrites=true&w=majority';
+
+mongoose.connect(MONGO_URI)
+  .then(() => console.log('MongoDB Connected Successfully!'))
+  .catch(err => console.log('MongoDB Connection Error:', err));
 
 // ================= USER SCHEMA & MODELS =================
 const UserSchema = new mongoose.Schema({
@@ -130,21 +133,16 @@ app.delete('/api/transactions/:id', verifyToken, async (req, res) => {
   }
 });
 
-// Start Server
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-
-const path = require('path');
-
-// ... aapka baaki express setup, database connection, aur routes yahan honge ...
-
-// Frontend ke dist folder ko static serve karo
+// ================= SERVE FRONTEND STATIC FILES =================
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
-// Koi bhi non-API route ho toh React ki index.html bhej do
-app.get('*', (req, res) => {
+// Express 5 / new path-to-regexp compatible route
+app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
+
+// Start Server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
