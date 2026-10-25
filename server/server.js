@@ -134,11 +134,11 @@ app.delete('/api/transactions/:id', verifyToken, async (req, res) => {
 });
 
 // ================= SERVE FRONTEND STATIC FILES =================
-app.use(express.static(path.join(__dirname, '../client/dist')));
+app.use(express.static(path.resolve(__dirname, '..', 'client', 'dist')));
 
-// Regex Catch-All Route (Compatible with Express 5 / Node v24)
+// Catch-All Route for Single Page Application
 app.get(/^(?!\/api).*/, (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  res.sendFile(path.resolve(__dirname, '..', 'client', 'dist', 'index.html'));
 });
 
 // Start Server
