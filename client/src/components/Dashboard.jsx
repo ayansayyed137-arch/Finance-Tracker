@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import toast from 'react-hot-toast';
 
 export default function Dashboard() {
@@ -19,15 +19,6 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-
-  // Logout Function
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('user');
-    toast.success('Logged out successfully');
-    navigate('/login');
-  };
 
   useEffect(() => {
     const storedName = localStorage.getItem('userName');
@@ -161,7 +152,7 @@ export default function Dashboard() {
     <div className="p-6">
       <div className="max-w-4xl mx-auto space-y-6">
         
-        {/* Welcome Banner (Logout button removed from here) */}
+        {/* Welcome Banner */}
         <div className="bg-gradient-to-r from-purple-600/80 to-sky-500/80 backdrop-blur-md p-6 rounded-2xl shadow-xl text-white flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Welcome back, {userName || 'User'}! 👋</h1>
@@ -189,31 +180,52 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Analytics Section */}
+        {/* Analytics Section: Pie Chart & Bar Chart */}
         {expenseTransactions.length > 0 && (
-          <div className="bg-white/40 backdrop-blur-md border border-white/50 p-6 rounded-2xl shadow-lg">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">Expense Breakdown (Analytics)</h2>
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    label
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Pie Chart */}
+            <div className="bg-white/40 backdrop-blur-md border border-white/50 p-6 rounded-2xl shadow-lg">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">Expense Breakdown (Pie Chart)</h2>
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={chartData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label
+                    >
+                      {chartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
+
+            {/* Bar Chart */}
+            <div className="bg-white/40 backdrop-blur-md border border-white/50 p-6 rounded-2xl shadow-lg">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">Expense Breakdown (Bar Chart)</h2>
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                    <XAxis dataKey="name" stroke="#4b5563" />
+                    <YAxis stroke="#4b5563" />
+                    <Tooltip />
+                    <Bar dataKey="value" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
           </div>
         )}
 
