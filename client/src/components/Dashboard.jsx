@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // <-- 1. Added for navigation/logout
+import API from '../services/api'; // <-- 2. Using centralized API instead of localhost axios
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import toast from 'react-hot-toast';
 
@@ -14,9 +15,19 @@ export default function Dashboard() {
   const [type, setType] = useState('income');
   const [category, setCategory] = useState('Food');
   const [userName, setUserName] = useState('');
-  const [loading, setLoading] = useState(false); // <-- Loading state for form submission
+  const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
   const token = localStorage.getItem('token');
+
+  // Logout Function
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('user');
+    toast.success('Logged out successfully');
+    navigate('/login');
+  };
 
   useEffect(() => {
     const storedName = localStorage.getItem('userName');
@@ -40,7 +51,8 @@ export default function Dashboard() {
 
   const fetchTransactions = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/transactions', {
+      // Using API instance (/api/transactions)
+      const res = await API.get('/transactions', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTransactions(res.data);
@@ -57,11 +69,12 @@ export default function Dashboard() {
       return;
     }
 
-    setLoading(true); // Start loading indicator
+    setLoading(true);
     const toastId = toast.loading('Adding transaction...');
 
     try {
-      await axios.post('http://localhost:5000/api/transactions', {
+      // Using API instance (/api/transactions)
+      await API.post('/transactions', {
         text,
         amount: Number(amount),
         type,
@@ -80,14 +93,15 @@ export default function Dashboard() {
       console.error(err);
       toast.error('Error adding transaction', { id: toastId });
     } finally {
-      setLoading(false); // Stop loading indicator
+      setLoading(false);
     }
   };
 
   const deleteTransaction = async (id) => {
     const toastId = toast.loading('Deleting transaction...');
     try {
-      await axios.delete(`http://localhost:5000/api/transactions/${id}`, {
+      // Using API instance (/api/transactions/:id)
+      await API.delete(`/transactions/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchTransactions();
@@ -108,12 +122,10 @@ export default function Dashboard() {
 
   const balance = income - expense;
 
-  // Currency formatter with ₹ symbol and Indian numbering
   const formatCurrency = (val) => {
     return `₹${Number(val || 0).toLocaleString('en-IN')}`;
   };
 
-  // Date formatter
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -134,7 +146,6 @@ export default function Dashboard() {
 
   const COLORS = ['#8b5cf6', '#0ea5e9', '#c084fc', '#38bdf8', '#a855f7'];
 
-  // Filter Logic
   const filteredTransactions = transactions.filter(t => {
     const matchesSearch = t.text.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = filterCategory === 'All' || t.category === filterCategory;
@@ -153,15 +164,25 @@ export default function Dashboard() {
     <div className="p-6">
       <div className="max-w-4xl mx-auto space-y-6">
         
-        {/* Welcome Banner */}
+        {/* Welcome Banner with Logout Button */}
         <div className="bg-gradient-to-r from-purple-600/80 to-sky-500/80 backdrop-blur-md p-6 rounded-2xl shadow-xl text-white flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Welcome back, {userName || 'User'}! 👋</h1>
             <p className="text-purple-100 mt-1 text-sm">Here is your financial overview for today.</p>
           </div>
-          <div className="hidden md:block bg-white/20 backdrop-blur-md px-4 py-2 rounded-xl border border-white/30 text-right">
-            <p className="text-xs text-purple-100">Net Balance</p>
-            <p className="text-xl font-bold">{formatCurrency(balance)}</p>
+          <div className="flex items-center space-x-4">
+            <div className="hidden md:block bg-white/20 backdrop-blur-md px-4 py-2 rounded-xl border border-white/30 text-right">
+              <p className="text-xs text-purple-100">Net Balance</p>
+              <p className="text-xl font-bold">{formatCurrency(balance)}</p>
+            </div>
+            {token && (
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-semibold shadow-md transition-all text-sm"
+              >
+                Logout
+              </button>
+            )}
           </div>
         </div>
 
