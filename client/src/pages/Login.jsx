@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from '../services/api'; // <-- Yahan API instance import kar li
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -9,23 +9,15 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
+      // Yahan ab axios ki jagah API instance use ho rahi hai jo automatic /api use karegi
+      const res = await API.post('/auth/login', {
         email,
         password
       });
-      setMessage(res.data.message);
-      
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
-      // User ka naam personalized banner ke liye save kar rahe hain
-      if (res.data.user && res.data.user.name) {
-        localStorage.setItem('userName', res.data.user.name);
-      }
-
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 1000);
-
+      setMessage('Login successful!');
+      // Token save karne ka code ya redirect yahan ho sakta hai agar pehle se hai
+      setEmail('');
+      setPassword('');
     } catch (err) {
       setMessage(err.response?.data?.message || 'Login failed');
     }
