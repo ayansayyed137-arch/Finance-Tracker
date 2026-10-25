@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
+import toast from 'react-hot-toast';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -17,15 +18,12 @@ export default function Login() {
       });
       setMessage('Login successful!');
       
-      // 1. Purana sara localStorage clear karo taaki purana user data na bache
       localStorage.clear();
 
-      // 2. Naya token save karo
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
       }
 
-      // 3. Naya user naam save karo (backend se aane wale name ya email ke base par)
       const loggedInName = res.data.name || res.data.user?.name || email.split('@')[0];
       localStorage.setItem('userName', loggedInName);
 
@@ -36,6 +34,12 @@ export default function Login() {
     } catch (err) {
       setMessage(err.response?.data?.message || 'Login failed');
     }
+  };
+
+  // Forgot password click handler (Aap yahan apna custom logic ya alert de sakte hain)
+  const handleForgotPassword = (e) => {
+    e.preventDefault();
+    toast.error('Password reset feature backend par configure karna hoga!');
   };
 
   return (
@@ -60,6 +64,18 @@ export default function Login() {
             className="w-full bg-white/60 border border-white/60 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 text-gray-800 placeholder-gray-500"
             required
           />
+          
+          {/* Forgot Password Link */}
+          <div className="flex justify-end">
+            <button 
+              type="button" 
+              onClick={handleForgotPassword}
+              className="text-xs text-purple-600 hover:underline font-medium"
+            >
+              Forgot Password?
+            </button>
+          </div>
+
           <button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-sky-500 text-white p-2 rounded-lg font-semibold hover:from-purple-700 hover:to-sky-600 shadow-md transition-all">
             Login
           </button>
