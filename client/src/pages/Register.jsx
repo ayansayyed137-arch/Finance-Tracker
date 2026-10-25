@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from '../services/api'; // <-- Humne yahan apni banayi hui API file import kar li hai
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -10,7 +10,8 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', {
+      // Yahan ab axios ki jagah API instance use ho rahi hai jo automatic /api use karegi
+      const res = await API.post('/auth/register', {
         name,
         email,
         password
