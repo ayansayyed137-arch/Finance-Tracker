@@ -88,6 +88,25 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// Forgot Password Route (Added here)
+app.post('/api/auth/forgot-password', async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found with this email address!' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: 'Password reset successfully! Now you can login with your new password.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ================= TRANSACTION ROUTES =================
 
 // Get User Specific Transactions
