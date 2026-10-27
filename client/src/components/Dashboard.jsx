@@ -27,7 +27,7 @@ export default function Dashboard() {
           setUserName(parsedUser.name);
         }
       } catch (err) {
-        console.error('Error parsing user storage', err);
+        console.error('Error parsing user from localStorage', err);
       }
     }
 
@@ -42,14 +42,14 @@ export default function Dashboard() {
       setTransactions(res.data);
     } catch (err) {
       console.error(err);
-      toast.error('Failed to load transaction data');
+      toast.error('Failed to fetch transactions');
     }
   };
 
   const addTransaction = async (e) => {
     e.preventDefault();
     if (!text || !amount) {
-      toast.error('Please fill in all required fields');
+      toast.error('Please fill in all fields');
       return;
     }
 
@@ -71,10 +71,10 @@ export default function Dashboard() {
       setCategory('Food');
       fetchTransactions();
       
-      toast.success('Transaction logged successfully', { id: toastId });
+      toast.success('Transaction added successfully!', { id: toastId });
     } catch (err) {
       console.error(err);
-      toast.error('Error recording transaction', { id: toastId });
+      toast.error('Error adding transaction', { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -106,50 +106,47 @@ export default function Dashboard() {
     value: categoryDataMap[cat]
   }));
 
-  const COLORS = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899'];
+  const COLORS = ['#8b5cf6', '#0ea5e9', '#c084fc', '#38bdf8', '#a855f7'];
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 p-4 md:p-8 font-sans">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         
-        {/* Top Developer Header */}
-        <div className="bg-gray-900/80 backdrop-blur border border-gray-800 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-xl">
+        {/* Welcome Banner */}
+        <div className="bg-gradient-to-r from-purple-600/80 to-sky-500/80 backdrop-blur-md p-6 rounded-2xl shadow-xl text-white flex justify-between items-center">
           <div>
-            <div className="flex items-center space-x-2">
-              <span className="h-2 w-2 rounded-full bg-cyan-400 animate-ping"></span>
-              <span className="text-xs font-mono tracking-widest uppercase text-cyan-400 font-semibold">Live Workspace</span>
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white mt-1">
-              Welcome back, {userName || 'User'}
-            </h1>
+            <h1 className="text-3xl font-bold">Welcome back, {userName || 'User'}! 👋</h1>
+            <p className="text-purple-100 mt-1 text-sm">Here is your financial overview for today.</p>
           </div>
-          <div className="bg-gray-950 border border-gray-800 px-5 py-3 rounded-xl text-right">
-            <p className="text-xs font-mono text-gray-400 uppercase">Net Balance</p>
-            <p className="text-2xl font-bold font-mono text-cyan-400">{formatCurrency(balance)}</p>
+          <div className="hidden md:block bg-white/20 backdrop-blur-md px-4 py-2 rounded-xl border border-white/30 text-right">
+            <p className="text-xs text-purple-100">Net Balance</p>
+            <p className="text-xl font-bold">{formatCurrency(balance)}</p>
           </div>
         </div>
 
-        {/* Metrics Overview */}
+        {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gray-900/60 border border-gray-800 p-5 rounded-2xl shadow-lg">
-            <p className="text-xs font-mono text-gray-400 uppercase">Total Balance</p>
-            <h2 className="text-2xl font-bold font-mono text-white mt-1">{formatCurrency(balance)}</h2>
+          <div className="bg-white/40 backdrop-blur-md border border-white/50 p-4 rounded-2xl shadow-lg border-l-4 border-purple-500">
+            <p className="text-gray-600 font-medium">Total Balance</p>
+            <h2 className="text-2xl font-bold text-gray-800">{formatCurrency(balance)}</h2>
           </div>
-          <div className="bg-gray-900/60 border border-gray-800 p-5 rounded-2xl shadow-lg border-l-4 border-l-cyan-500">
-            <p className="text-xs font-mono text-cyan-400 uppercase">Total Income</p>
-            <h2 className="text-2xl font-bold font-mono text-cyan-400 mt-1">+{formatCurrency(income)}</h2>
+          <div className="bg-white/40 backdrop-blur-md border border-white/50 p-4 rounded-2xl shadow-lg border-l-4 border-sky-500">
+            <p className="text-gray-600 font-medium">Total Income</p>
+            <h2 className="text-2xl font-bold text-sky-600">+{formatCurrency(income)}</h2>
           </div>
-          <div className="bg-gray-900/60 border border-gray-800 p-5 rounded-2xl shadow-lg border-l-4 border-indigo-500">
-            <p className="text-xs font-mono text-indigo-400 uppercase">Total Expense</p>
-            <h2 className="text-2xl font-bold font-mono text-indigo-400 mt-1">-{formatCurrency(expense)}</h2>
+          <div className="bg-white/40 backdrop-blur-md border border-white/50 p-4 rounded-2xl shadow-lg border-l-4 border-purple-400">
+            <p className="text-gray-600 font-medium">Total Expense</p>
+            <h2 className="text-2xl font-bold text-purple-600">-{formatCurrency(expense)}</h2>
           </div>
         </div>
 
-        {/* Analytics Charts */}
+        {/* Analytics Section: Pie Chart & Bar Chart */}
         {expenseTransactions.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-gray-900/60 border border-gray-800 p-6 rounded-2xl shadow-lg">
-              <h2 className="text-sm font-mono text-gray-400 uppercase mb-4">Expense Distribution</h2>
+            
+            {/* Pie Chart */}
+            <div className="bg-white/40 backdrop-blur-md border border-white/50 p-6 rounded-2xl shadow-lg">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">Expense Breakdown (Pie Chart)</h2>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -157,97 +154,97 @@ export default function Dashboard() {
                       data={chartData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={60}
                       outerRadius={80}
-                      paddingAngle={4}
+                      fill="#8884d8"
                       dataKey="value"
+                      label
                     >
                       {chartData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip contentStyle={{ backgroundColor: '#030712', borderColor: '#1f2937', borderRadius: '8px', color: '#fff' }} />
+                    <Tooltip />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            <div className="bg-gray-900/60 border border-gray-800 p-6 rounded-2xl shadow-lg">
-              <h2 className="text-sm font-mono text-gray-400 uppercase mb-4">Category Analysis</h2>
+            {/* Bar Chart */}
+            <div className="bg-white/40 backdrop-blur-md border border-white/50 p-6 rounded-2xl shadow-lg">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">Expense Breakdown (Bar Chart)</h2>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                    <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
-                    <YAxis stroke="#9ca3af" fontSize={12} />
-                    <Tooltip contentStyle={{ backgroundColor: '#030712', borderColor: '#1f2937', borderRadius: '8px', color: '#fff' }} />
-                    <Bar dataKey="value" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                    <XAxis dataKey="name" stroke="#4b5563" />
+                    <YAxis stroke="#4b5563" />
+                    <Tooltip />
+                    <Bar dataKey="value" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </div>
+
           </div>
         )}
 
-        {/* Transaction Entry Form */}
-        <div className="bg-gray-900/60 border border-gray-800 p-6 rounded-2xl shadow-lg space-y-4">
-          <div>
-            <h2 className="text-lg font-semibold text-white">Add New Transaction</h2>
-            <p className="text-xs text-gray-400">Record a new credit or debit transaction</p>
-          </div>
+        {/* Add Transaction Form */}
+        <form onSubmit={addTransaction} className="bg-white/40 backdrop-blur-md border border-white/50 p-6 rounded-2xl shadow-lg space-y-4">
+          <h2 className="text-xl font-semibold text-gray-800">Add New Transaction</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            
+            <input
+              type="text"
+              placeholder="Description (e.g., Salary, Rent)"
+              value={text}
+              onChange={(e) => {
+                const onlyText = e.target.value.replace(/[0-9]/g, '');
+                setText(onlyText);
+              }}
+              className="bg-white/60 border border-white/60 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 w-full text-gray-800 placeholder-gray-500"
+              required
+            />
 
-          <form onSubmit={addTransaction} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <input
-                type="text"
-                placeholder="Description (Alphabets only)"
-                value={text}
-                onChange={(e) => {
-                  const cleanText = e.target.value.replace(/[0-9]/g, '');
-                  setText(cleanText);
-                }}
-                className="bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:outline-none focus:border-cyan-500 text-white placeholder-gray-500 transition-all"
-                required
-              />
-              <input
-                type="number"
-                placeholder="Amount (e.g. 5000)"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:outline-none focus:border-cyan-500 text-white placeholder-gray-500 transition-all font-mono"
-                required
-              />
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                className="bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:outline-none focus:border-cyan-500 text-white transition-all"
-              >
-                <option value="income">Income</option>
-                <option value="expense">Expense</option>
-              </select>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:outline-none focus:border-cyan-500 text-white transition-all"
-              >
-                <option value="Food">Food & Drinks</option>
-                <option value="Rent">Rent & Bills</option>
-                <option value="Salary">Salary</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
+            <input
+              type="number"
+              placeholder="Amount (e.g., 50000)"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="bg-white/60 border border-white/60 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 w-full text-gray-800 placeholder-gray-500"
+              required
+            />
 
-            <button 
-              type="submit" 
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white font-semibold p-3 rounded-xl shadow-lg transition-all disabled:opacity-50 text-sm tracking-wide"
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              className="bg-white/60 border border-white/60 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 w-full text-gray-800"
             >
-              {loading ? 'Processing...' : 'Submit Transaction'}
-            </button>
-          </form>
-        </div>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="bg-white/60 border border-white/60 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 w-full text-gray-800"
+            >
+              <option value="Food">Food & Drinks</option>
+              <option value="Rent">Rent & Bills</option>
+              <option value="Salary">Salary</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Other">Other</option>
+            </select>
+
+          </div>
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-purple-600 to-sky-500 text-white p-2 rounded-lg font-semibold hover:from-purple-700 hover:to-sky-600 shadow-md transition-all disabled:opacity-50"
+          >
+            {loading ? 'Adding Transaction...' : 'Add Transaction'}
+          </button>
+        </form>
 
       </div>
     </div>
