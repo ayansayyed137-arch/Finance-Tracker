@@ -72,13 +72,19 @@ export default function Transactions() {
         
         {/* Filters UI */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          
+          {/* Search Input with Alphabet-only validation */}
           <input
             type="text"
             placeholder="Search transactions..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              const onlyText = e.target.value.replace(/[0-9]/g, '');
+              setSearchTerm(onlyText);
+            }}
             className="bg-white/60 border border-white/60 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 w-full text-gray-800 placeholder-gray-500"
           />
+
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
