@@ -194,14 +194,21 @@ export default function Dashboard() {
         <form onSubmit={addTransaction} className="bg-white/40 backdrop-blur-md border border-white/50 p-6 rounded-2xl shadow-lg space-y-4">
           <h2 className="text-xl font-semibold text-gray-800">Add New Transaction</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            
+            {/* Description Input (Only text/strings allowed, numbers stripped automatically) */}
             <input
               type="text"
               placeholder="Description (e.g., Salary, Rent)"
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => {
+                const onlyText = e.target.value.replace(/[0-9]/g, '');
+                setText(onlyText);
+              }}
               className="bg-white/60 border border-white/60 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 w-full text-gray-800 placeholder-gray-500"
               required
             />
+
+            {/* Amount Input (Numbers only) */}
             <input
               type="number"
               placeholder="Amount (e.g., 50000)"
@@ -210,6 +217,7 @@ export default function Dashboard() {
               className="bg-white/60 border border-white/60 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 w-full text-gray-800 placeholder-gray-500"
               required
             />
+
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
@@ -218,6 +226,7 @@ export default function Dashboard() {
               <option value="income">Income</option>
               <option value="expense">Expense</option>
             </select>
+
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -229,6 +238,7 @@ export default function Dashboard() {
               <option value="Shopping">Shopping</option>
               <option value="Other">Other</option>
             </select>
+
           </div>
           <button 
             type="submit" 
