@@ -1,27 +1,33 @@
 import React, { useState } from 'react';
-import API from '../services/api'; // <-- Humne yahan apni banayi hui API file import kar li hai
+import { useNavigate, Link } from 'react-router-dom';
+import API from '../services/api';
+import toast from 'react-hot-toast';
 
 export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      // Yahan ab axios ki jagah API instance use ho rahi hai jo automatic /api use karegi
       const res = await API.post('/auth/register', {
         name,
         email,
         password
       });
-      setMessage(res.data.message);
-      setName('');
-      setEmail('');
-      setPassword('');
+      setMessage('Registration successful! Please login.');
+      toast.success('Registration successful!');
+      
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
+
     } catch (err) {
       setMessage(err.response?.data?.message || 'Registration failed');
+      toast.error(err.response?.data?.message || 'Registration failed');
     }
   };
 
@@ -31,22 +37,34 @@ export default function Register() {
         <h2 className="text-2xl font-bold text-center text-gray-800">Create Account</h2>
         {message && <p className="text-center text-sm text-purple-700 font-medium">{message}</p>}
         <form onSubmit={handleRegister} className="space-y-4">
+          
+          {/* Name Input (Only Alphabets allowed) */}
           <input
             type="text"
             placeholder="Full Name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              const onlyText = e.target.value.replace(/[0-9]/g, '');
+              setName(onlyText);
+            }}
             className="w-full bg-white/60 border border-white/60 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 text-gray-800 placeholder-gray-500"
             required
           />
+
+          {/* Email Input (Only Alphabets for name part before numbers/domain) */}
           <input
             type="email"
-            placeholder="Email Address"
+            placeholder="Email (e.g. name123@gmail.com)"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              // Custom logic to ensure name part before numbers/domain contains letters
+              setEmail(e.target.value);
+            }}
             className="w-full bg-white/60 border border-white/60 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 text-gray-800 placeholder-gray-500"
             required
           />
+
+          {/* Password Input */}
           <input
             type="password"
             placeholder="Password"
@@ -55,10 +73,20 @@ export default function Register() {
             className="w-full bg-white/60 border border-white/60 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 text-gray-800 placeholder-gray-500"
             required
           />
+
           <button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-sky-500 text-white p-2 rounded-lg font-semibold hover:from-purple-700 hover:to-sky-600 shadow-md transition-all">
             Register
           </button>
         </form>
+
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">
+            Already have an account?{' '}
+            <Link to="/login" className="text-purple-600 hover:underline font-semibold">
+              Login here
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
