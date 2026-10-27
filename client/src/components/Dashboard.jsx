@@ -42,19 +42,19 @@ export default function Dashboard() {
       setTransactions(res.data);
     } catch (err) {
       console.error(err);
-      toast.error('Unable to sync transaction data');
+      toast.error('Failed to load transaction data');
     }
   };
 
   const addTransaction = async (e) => {
     e.preventDefault();
     if (!text || !amount) {
-      toast.error('All input fields are required');
+      toast.error('Please fill in all required fields');
       return;
     }
 
     setLoading(true);
-    const toastId = toast.loading('Processing entry...');
+    const toastId = toast.loading('Adding transaction...');
 
     try {
       await API.post('/transactions', {
@@ -71,10 +71,10 @@ export default function Dashboard() {
       setCategory('Food');
       fetchTransactions();
       
-      toast.success('Record added successfully', { id: toastId });
+      toast.success('Transaction logged successfully', { id: toastId });
     } catch (err) {
       console.error(err);
-      toast.error('Failed to save record', { id: toastId });
+      toast.error('Error recording transaction', { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -106,63 +106,50 @@ export default function Dashboard() {
     value: categoryDataMap[cat]
   }));
 
-  const BRAND_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+  const COLORS = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899'];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 p-4 md:p-8 font-sans">
-      <div className="max-w-5xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-950 text-gray-100 p-4 md:p-8 font-sans">
+      <div className="max-w-6xl mx-auto space-y-6">
         
-        {/* Top Header / Banner */}
-        <div className="bg-slate-900 border border-slate-800 text-white p-6 rounded-xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        {/* Top Developer Header */}
+        <div className="bg-gray-900/80 backdrop-blur border border-gray-800 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-xl">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-              <p className="text-xs font-mono uppercase tracking-wider text-slate-400">Account Overview</p>
+            <div className="flex items-center space-x-2">
+              <span className="h-2 w-2 rounded-full bg-cyan-400 animate-ping"></span>
+              <span className="text-xs font-mono tracking-widest uppercase text-cyan-400 font-semibold">Live Workspace</span>
             </div>
-            <h1 className="text-2xl md:text-3xl font-semibold mt-1">
-              Welcome, {userName || 'User'}
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white mt-1">
+              Welcome back, {userName || 'User'}
             </h1>
           </div>
-          
-          <div className="bg-slate-800/80 border border-slate-700/60 px-5 py-3 rounded-lg text-right w-full md:w-auto">
-            <p className="text-xs font-mono text-slate-400 uppercase">Available Capital</p>
-            <p className="text-2xl font-bold font-mono tracking-tight text-emerald-400">
-              {formatCurrency(balance)}
-            </p>
+          <div className="bg-gray-950 border border-gray-800 px-5 py-3 rounded-xl text-right">
+            <p className="text-xs font-mono text-gray-400 uppercase">Net Balance</p>
+            <p className="text-2xl font-bold font-mono text-cyan-400">{formatCurrency(balance)}</p>
           </div>
         </div>
 
-        {/* Metrics Grid */}
+        {/* Metrics Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:border-slate-300 transition-all">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-mono">Net Balance</p>
-            <h2 className="text-2xl font-bold font-mono text-slate-900 mt-2">{formatCurrency(balance)}</h2>
-            <p className="text-xs text-slate-400 mt-1">Calculated from total ledger</p>
+          <div className="bg-gray-900/60 border border-gray-800 p-5 rounded-2xl shadow-lg">
+            <p className="text-xs font-mono text-gray-400 uppercase">Total Balance</p>
+            <h2 className="text-2xl font-bold font-mono text-white mt-1">{formatCurrency(balance)}</h2>
           </div>
-
-          <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm border-l-4 border-l-emerald-500 hover:border-slate-300 transition-all">
-            <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider font-mono">Total Inflow</p>
-            <h2 className="text-2xl font-bold font-mono text-emerald-600 mt-2">+{formatCurrency(income)}</h2>
-            <p className="text-xs text-slate-400 mt-1">Income & credits</p>
+          <div className="bg-gray-900/60 border border-gray-800 p-5 rounded-2xl shadow-lg border-l-4 border-l-cyan-500">
+            <p className="text-xs font-mono text-cyan-400 uppercase">Total Income</p>
+            <h2 className="text-2xl font-bold font-mono text-cyan-400 mt-1">+{formatCurrency(income)}</h2>
           </div>
-
-          <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm border-l-4 border-l-rose-500 hover:border-slate-300 transition-all">
-            <p className="text-xs font-semibold text-rose-600 uppercase tracking-wider font-mono">Total Outflow</p>
-            <h2 className="text-2xl font-bold font-mono text-rose-600 mt-2">-{formatCurrency(expense)}</h2>
-            <p className="text-xs text-slate-400 mt-1">Expenses & debits</p>
+          <div className="bg-gray-900/60 border border-gray-800 p-5 rounded-2xl shadow-lg border-l-4 border-indigo-500">
+            <p className="text-xs font-mono text-indigo-400 uppercase">Total Expense</p>
+            <h2 className="text-2xl font-bold font-mono text-indigo-400 mt-1">-{formatCurrency(expense)}</h2>
           </div>
         </div>
 
-        {/* Chart Section */}
+        {/* Analytics Charts */}
         {expenseTransactions.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <div className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm">
-              <div className="border-b border-slate-100 pb-3 mb-4">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-700 font-mono">
-                  Category Distribution
-                </h2>
-              </div>
+            <div className="bg-gray-900/60 border border-gray-800 p-6 rounded-2xl shadow-lg">
+              <h2 className="text-sm font-mono text-gray-400 uppercase mb-4">Expense Distribution</h2>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -170,120 +157,94 @@ export default function Dashboard() {
                       data={chartData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={50}
+                      innerRadius={60}
                       outerRadius={80}
-                      paddingAngle={3}
+                      paddingAngle={4}
                       dataKey="value"
                     >
                       {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={BRAND_COLORS[index % BRAND_COLORS.length]} />
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#fff', borderRadius: '8px' }} />
+                    <Tooltip contentStyle={{ backgroundColor: '#030712', borderColor: '#1f2937', borderRadius: '8px', color: '#fff' }} />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            <div className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm">
-              <div className="border-b border-slate-100 pb-3 mb-4">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-700 font-mono">
-                  Expense Comparison
-                </h2>
-              </div>
+            <div className="bg-gray-900/60 border border-gray-800 p-6 rounded-2xl shadow-lg">
+              <h2 className="text-sm font-mono text-gray-400 uppercase mb-4">Category Analysis</h2>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="2 2" stroke="#e2e8f0" />
-                    <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
-                    <YAxis stroke="#64748b" fontSize={12} />
-                    <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#fff', borderRadius: '8px' }} />
-                    <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
+                    <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
+                    <YAxis stroke="#9ca3af" fontSize={12} />
+                    <Tooltip contentStyle={{ backgroundColor: '#030712', borderColor: '#1f2937', borderRadius: '8px', color: '#fff' }} />
+                    <Bar dataKey="value" fill="#6366f1" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </div>
-
           </div>
         )}
 
-        {/* Add Entry Form */}
-        <div className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm">
-          <div className="border-b border-slate-100 pb-3 mb-4">
-            <h2 className="text-base font-semibold text-slate-800">Create Transaction Record</h2>
-            <p className="text-xs text-slate-500">Log incoming capital or expenses into the system</p>
+        {/* Transaction Entry Form */}
+        <div className="bg-gray-900/60 border border-gray-800 p-6 rounded-2xl shadow-lg space-y-4">
+          <div>
+            <h2 className="text-lg font-semibold text-white">Add New Transaction</h2>
+            <p className="text-xs text-gray-400">Record a new credit or debit transaction</p>
           </div>
 
           <form onSubmit={addTransaction} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              
-              {/* Description field: Alphabet validation */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Description</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Salary, Equipment"
-                  value={text}
-                  onChange={(e) => {
-                    const cleanText = e.target.value.replace(/[0-9]/g, '');
-                    setText(cleanText);
-                  }}
-                  className="w-full bg-slate-50 border border-slate-300 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white text-slate-800 transition-all"
-                  required
-                />
-              </div>
-
-              {/* Amount field */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Amount (INR)</label>
-                <input
-                  type="number"
-                  placeholder="e.g. 15000"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white text-slate-800 transition-all font-mono"
-                  required
-                />
-              </div>
-
-              {/* Type field */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Transaction Type</label>
-                <select
-                  value={type}
-                  onChange={(e) => setType(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white text-slate-800 transition-all"
-                >
-                  <option value="income">Income (+)</option>
-                  <option value="expense">Expense (-)</option>
-                </select>
-              </div>
-
-              {/* Category field */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Category</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white text-slate-800 transition-all"
-                >
-                  <option value="Food">Food & Utilities</option>
-                  <option value="Rent">Housing & Bills</option>
-                  <option value="Salary">Payroll & Income</option>
-                  <option value="Shopping">Shopping & Assets</option>
-                  <option value="Other">Miscellaneous</option>
-                </select>
-              </div>
-
+              <input
+                type="text"
+                placeholder="Description (Alphabets only)"
+                value={text}
+                onChange={(e) => {
+                  const cleanText = e.target.value.replace(/[0-9]/g, '');
+                  setText(cleanText);
+                }}
+                className="bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:outline-none focus:border-cyan-500 text-white placeholder-gray-500 transition-all"
+                required
+              />
+              <input
+                type="number"
+                placeholder="Amount (e.g. 5000)"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:outline-none focus:border-cyan-500 text-white placeholder-gray-500 transition-all font-mono"
+                required
+              />
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:outline-none focus:border-cyan-500 text-white transition-all"
+              >
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:outline-none focus:border-cyan-500 text-white transition-all"
+              >
+                <option value="Food">Food & Drinks</option>
+                <option value="Rent">Rent & Bills</option>
+                <option value="Salary">Salary</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Other">Other</option>
+              </select>
             </div>
 
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full md:w-auto px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-medium text-sm rounded-lg shadow-sm transition-all disabled:opacity-50 cursor-pointer"
+              className="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white font-semibold p-3 rounded-xl shadow-lg transition-all disabled:opacity-50 text-sm tracking-wide"
             >
-              {loading ? 'Processing...' : 'Save Record'}
+              {loading ? 'Processing...' : 'Submit Transaction'}
             </button>
           </form>
         </div>
